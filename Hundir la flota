@@ -1,0 +1,69 @@
+import numpy as np
+import random
+
+#Creamos las matrices 
+matriz1 = np.zeros((20, 20), int)
+matriz_jugador = np.full((20, 20) , ".", str)
+barcos = [2, 3, 4]
+
+#Posicionamos los barcos en la tabla
+for tamaño in barcos:
+    colocado = False
+    while not colocado:
+        orientacion = random.choice(["H", "V"])
+        fila = random.randint(0, 19)
+        col = random.randint(0, 19)
+        if orientacion == "H" and col + tamaño <= 20:
+            if np.all(matriz1[fila, col:col + tamaño] == 0):
+                matriz1[fila, col:col + tamaño] = 1
+                colocado = True
+        elif orientacion == "V" and fila + tamaño <= 20:
+            if np.all(matriz1[fila:fila + tamaño, col] == 0):
+                matriz1[fila:fila + tamaño, col] = 1
+                colocado = True
+
+total_barcos = np.sum(matriz1)
+aciertos = 0
+intentos = 0
+print("Aqui esta el tablero de 20x20 con 3 barcos de 2, 3 y 4 tamaño")
+print("Introduce las coordenadas a donde quieres disparar asi : 1 1\n")
+
+#Hundir los barcos colocados
+while aciertos < total_barcos:
+    for fila in matriz_jugador:
+        print(" ".join(fila))
+    print()
+    entrada = input("Escribe las coordenadaas donde quieres disparar: ")
+    try:
+        fila, col = map(int, entrada.split())
+    except:
+        print("Eso no vale , tienen que ser 2 numeros enteros y que esten separados entre si\n")
+        continue
+    if not (0 <= fila < 20 and 0 <= col < 20):
+        print("El tablero no es tan grande , CRACK\n")
+        continue
+    if matriz_jugador[fila, col] != ".":
+        print("Ya le has disparado a ese lugar\n")
+        continue
+
+    intentos += 1
+    if matriz1[fila, col] == 1:
+        print("Tocado\n")
+        matriz_jugador[fila, col] = "X"
+        aciertos += 1
+    else:
+        print("Agua\n")
+        matriz_jugador[fila, col] = "O"
+
+print(f"\nHundiste todos los barcos en {intentos} intentos")
+
+#Mostrar los barcos del tablero original
+print("\nComo has conseguido hundir todos los barcos aqui te muestro como es que estaban colocados")
+for i in range(20):
+    fila = ""
+    for j in range(20):
+        if matriz1[i, j] == 1:
+            fila += "X "
+        else:
+            fila += ". "
+    print(fila)
